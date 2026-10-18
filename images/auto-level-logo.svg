@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Auto Level Survey</title>
+  <desc id="desc">A clean white and blue automatic level surveying instrument on a tripod, inside a rounded blue square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1687e8"/>
+      <stop offset="1" stop-color="#073b91"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dce8f5"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="488" height="488" rx="94" fill="url(#bg)"/>
+  <rect x="28" y="28" width="456" height="456" rx="80" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="3"/>
+  <!-- telescope -->
+  <path d="M123 174 Q123 150 148 150 H346 Q371 150 371 175 V235 Q371 258 347 258 H148 Q123 258 123 235 Z" fill="url(#body)" stroke="#c7d9ec" stroke-width="5"/>
+  <path d="M142 164 H333 Q350 164 350 181 V226 Q350 241 333 241 H142 Z" fill="#f8fbff"/>
+  <path d="M111 164 Q111 145 132 145 H165 Q183 145 183 164 V244 Q183 263 164 263 H132 Q111 263 111 244 Z" fill="#162a45"/>
+  <ellipse cx="132" cy="204" rx="20" ry="42" fill="#07182f" stroke="#7d9bb9" stroke-width="5"/>
+  <ellipse cx="132" cy="204" rx="11" ry="31" fill="#1268c8"/>
+  <ellipse cx="132" cy="204" rx="6" ry="23" fill="#73c5ff"/>
+  <rect x="219" y="157" width="112" height="18" rx="8" fill="#1674ca"/>
+  <rect x="278" y="202" width="36" height="28" rx="6" fill="#233b59"/>
+  <!-- focus knobs -->
+  <rect x="204" y="247" width="35" height="27" rx="8" fill="#d6e2ef" stroke="#a9bfd5" stroke-width="3"/>
+  <rect x="291" y="247" width="43" height="31" rx="10" fill="#182b44"/>
+  <path d="M299 251 V274 M307 250 V275 M315 250 V275 M323 252 V273" stroke="#8da4bd" stroke-width="3"/>
+  <!-- level base -->
+  <path d="M171 277 H348 L365 302 H154 Z" fill="#f3f7fc" stroke="#b6c9dc" stroke-width="4"/>
+  <rect x="155" y="301" width="210" height="23" rx="6" fill="#1c2c40"/>
+  <path d="M171 307 H349 M180 302 V323 M200 302 V316 M220 302 V323 M240 302 V316 M260 302 V323 M280 302 V316 M300 302 V323 M320 302 V316 M340 302 V323" stroke="#e7f0fa" stroke-width="3"/>
+  <rect x="224" y="324" width="72" height="30" rx="8" fill="#182a40"/>
+  <rect x="207" y="350" width="106" height="22" rx="6" fill="#f3f7fc" stroke="#b6c9dc" stroke-width="4"/>
+  <!-- tripod head -->
+  <path d="M196 370 H324 L344 397 H176 Z" fill="#f4b82e" stroke="#e7a21c" stroke-width="4"/>
+  <path d="M224 390 L177 478 H208 L251 402 Z" fill="#e9f2fb" stroke="#a9c0d7" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M288 390 L335 478 H304 L261 402 Z" fill="#e9f2fb" stroke="#a9c0d7" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M245 397 H267 L274 478 H238 Z" fill="#d5e3f1" stroke="#a9c0d7" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M198 390 L177 429 L214 414 Z M314 390 L335 429 L298 414 Z" fill="#ffd15b"/>
+  <circle cx="203" cy="399" r="7" fill="#18314d"/><circle cx="309" cy="399" r="7" fill="#18314d"/>
+</svg>
