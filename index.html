@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0b3b67">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<title>Auto Level Survey</title>
+<style>
+:root{--navy:#0b3b67;--blue:#145b91;--ink:#142538;--muted:#64748b;--line:#e2e8f0;--bg:#f3f6fa}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%;font-size:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line)}
+.logo{width:58px;height:58px;flex:0 0 58px;display:block;object-fit:contain}
+.brand h1{margin:0;font-size:20px;line-height:1.2}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+main{width:calc(100% - 28px);max-width:900px;margin:18px auto 28px}
+.hero{padding:24px 20px;border-radius:18px;color:#fff;background:linear-gradient(135deg,var(--navy),var(--blue))}
+.eyebrow{font-size:10px;letter-spacing:2px;font-weight:bold;opacity:.85}
+.hero h2{font-size:27px;line-height:1.2;margin:10px 0}.hero p{margin:0;color:#e2edf7;font-size:14px}
+.section-title{margin:24px 2px 12px}.section-title h2{font-size:20px;margin:0}.section-title p{font-size:13px;color:var(--muted);margin:3px 0 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{min-width:0;min-height:145px;padding:14px;border:1px solid var(--line);border-radius:15px;background:#fff;color:var(--ink);text-align:left;font-family:Arial,Helvetica,sans-serif;position:relative;display:flex;flex-direction:column;align-items:flex-start;cursor:pointer}
+.icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#eaf2f9;color:var(--navy);font-size:22px;font-weight:bold;margin-bottom:10px}
+.title{font-size:14px;font-weight:bold}.desc{font-size:12px;color:var(--muted);margin-top:5px;padding-right:4px}.arrow{position:absolute;right:12px;bottom:8px;color:var(--blue);font-size:18px}
+.volume-card{cursor:default;}
+.development{display:inline-block;margin-top:10px;color:#b45309;background:#fff7e6;border:1px solid #f4d7a1;border-radius:999px;padding:4px 9px;font-size:11px;font-style:italic;font-weight:600;letter-spacing:.2px}
+.signature-card{min-width:0;min-height:145px;padding:16px 13px;border:1px solid #d6e4ef;border-radius:15px;background:linear-gradient(145deg,#fff 0%,#edf5fb 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.signature-spark{font-size:21px;color:#b58b3b;line-height:1;margin-bottom:5px}
+.signature-main{font-family:Georgia,'Times New Roman',serif;font-size:16px;font-style:italic;color:#0b3b67;white-space:nowrap}
+.signature-main strong{font-size:19px;font-weight:700}
+.signature-sub{font-family:Georgia,'Times New Roman',serif;font-size:14px;font-style:italic;color:#52677b;margin-top:1px}
+.signature-sub b{color:#145b91;font-weight:700}
+.signature-line{width:62%;height:1px;background:linear-gradient(90deg,transparent,#b58b3b,transparent);margin:9px 0 5px}
+.signature-caption{font-size:10px;color:#64748b;letter-spacing:.6px}
+.notice{margin-top:14px;padding:12px;border-radius:12px;border:1px solid #d7e5f1;background:#edf5fb;color:#31516d;font-size:12px}
+.recording-preview{margin-top:8px;padding:13px 12px;border-radius:10px;background:#c62828;color:#ffeb3b;font-size:14px;font-weight:800;text-align:center;letter-spacing:.25px;border:1px solid #a61b1b;box-shadow:0 2px 5px rgba(0,0,0,.12);user-select:none}
+footer{display:flex;justify-content:space-between;gap:8px;max-width:900px;width:calc(100% - 28px);margin:auto;padding:12px 0 22px;color:var(--muted);font-size:11px}
+.page{display:none}.page.active{display:block}
+.back{border:0;background:transparent;color:var(--blue);font-weight:bold;padding:8px 0 16px;font-size:15px;cursor:pointer}
+.method-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:18px}
+.method{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;text-align:left;cursor:pointer;color:var(--ink)}
+.method h3{margin:0 0 6px;font-size:18px}.method p{margin:0;color:var(--muted);font-size:13px}
+.method .symbol{font-size:25px;color:var(--blue);margin-bottom:8px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.form-grid{display:grid;grid-template-columns:1fr;gap:13px;margin-top:16px}.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}.field input,.field select{width:100%;min-height:45px;border:1px solid #cbd5e1;border-radius:10px;padding:10px 12px;font:inherit;background:#fff;color:var(--ink)}.cross-position-types{grid-template-columns:repeat(4,minmax(0,1fr));margin:12px 0}.cross-position-types .type-btn{padding:10px 4px}.reading-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.type-btn{border:1px solid #cbd5e1;border-radius:10px;padding:12px 8px;background:#fff;color:var(--navy);font-weight:bold;font-size:15px;cursor:pointer}.type-btn.selected{background:var(--navy);color:#fff;border-color:var(--navy)}.primary{width:100%;border:0;border-radius:11px;background:var(--blue);color:#fff;padding:14px;font-weight:bold;font-size:15px;cursor:pointer}.table-wrap{overflow-x:auto;margin-top:18px}table{width:100%;border-collapse:collapse;min-width:570px;background:#fff}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{background:#edf5fb;color:var(--navy)}.small-note{font-size:12px;color:var(--muted);margin:8px 0 0}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero{padding:32px}.method-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:350px){.brand h1{font-size:17px}.logo{width:48px;height:48px;flex-basis:48px}.card{padding:11px}.grid{gap:7px}}
+
+.cross-road-wrap{width:100%;overflow-x:auto;padding-bottom:5px}
+.cross-road{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;min-width:0;align-items:end}
+.cross-cell{min-width:0}
+.cross-cell input{width:100%;min-width:0}
+.cross-cell.center-cell{grid-column:2;grid-row:2}
+.cross-cell.left-cell{grid-row:1}
+.cross-cell.right-cell{grid-row:3}
+.cross-road-wrap{overflow:visible}
+.cross-road .cross-cell label{text-align:center}
+
+.cross-cell{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cross-cell label{text-align:center;font-size:13px;font-weight:700;color:var(--navy)}
+.cross-cell input{width:100%;min-width:0;padding:11px 5px;text-align:center;font-size:15px}
+
+
+.position-selector{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.position-btn{min-height:48px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--navy);font-weight:700;font-size:16px;cursor:pointer}
+.position-btn.selected{background:var(--navy);border-color:var(--navy);color:#fff}
+.active-position-note{margin:0 0 16px;padding:10px 12px;background:#edf5fb;border:1px solid #d7e5f1;border-radius:10px;color:#31516d;font-size:13px}
+
+
+.cross-road{display:flex!important;flex-direction:column;align-items:center;gap:8px;min-width:0!important;width:100%}
+.cross-row{display:flex;justify-content:center;align-items:flex-start;gap:7px;width:100%;flex-wrap:nowrap}
+.cross-row .cross-cell{width:clamp(58px,18%,88px);flex:0 1 88px}
+.cross-row .cross-cell input{width:100%;min-width:0;padding:10px 3px;text-align:center}
+.cross-row .cross-cell label{text-align:center}
+.road-cross-illustration{display:block;width:100%;max-width:520px;height:auto;margin:8px auto 16px;border:1px solid var(--line);border-radius:14px;background:#f8fbff}
+
+
+.chainage-between-position-and-reading{margin:18px 0 22px;padding:14px;background:#f8fbff;border:1px solid var(--line);border-radius:14px}
+.chainage-between-position-and-reading label{display:block;margin-bottom:8px}
+
+
+.position-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px;max-width:440px;margin-left:auto;margin-right:auto}
+.position-btn{min-height:48px;border:1px solid var(--line,#cbd5e1);border-radius:12px;background:#fff;color:var(--navy,#123f63);font-weight:700;font-size:1rem}
+.position-btn.selected{background:var(--navy,#123f63);border-color:var(--navy,#123f63);color:#fff}
+.side-tbm{grid-column:2;grid-row:2}
+</style>
+</head>
+<body>
+<header>
+  <svg class="logo" viewBox="0 0 100 100" role="img" aria-label="Auto level surveying logo" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1686d9"/><stop offset="1" stop-color="#0b3b67"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="23" fill="url(#blue)"/><circle cx="50" cy="42" r="29" fill="#fff" opacity=".12"/><rect x="20" y="27" width="60" height="27" rx="8" fill="#fff" stroke="#ffd979" stroke-width="3"/><rect x="27" y="34" width="31" height="13" rx="4" fill="#145b91"/><circle cx="68" cy="40.5" r="6" fill="#145b91" stroke="#ffd979" stroke-width="3"/><path d="M47 55 27 86 M50 55 51 87 M53 55 74 86" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M14 61H86" stroke="#ffd979" stroke-width="3" stroke-linecap="round"/></svg>
+  <div class="brand"><h1>Auto Level Survey</h1><p>Field tools &amp; calculations</p></div>
+</header>
+<main>
+  <section id="dashboard" class="page active">
+    <section class="hero"><div class="eyebrow">SURVEYING TOOLKIT</div><h2>Ready for the field?</h2><p>A simple home for your surveying tools. Choose a tool below to begin.</p></section>
+    <div class="section-title"><h2>Tools</h2><p>Choose a tool to get started</p></div>
+    <section class="grid">
+      <button class="card" type="button" onclick="openLevelBook()"><span class="icon">↕</span><span class="title">Level Book</span><span class="desc">Record staff readings and levels</span><span class="arrow">→</span></button>
+      <button class="card" type="button" onclick="openSavedRoadSurveys()"><span class="icon">📁</span><span class="title">Saved Road Surveys</span><span class="desc">Open, update, or delete saved road projects</span><span class="arrow">→</span></button>
+      <div class="card volume-card" aria-label="Volume Calculation, in development"><span class="icon">▱</span><span class="title">Volume Calculation</span><span class="desc">Earthwork and quantity calculations</span><span class="development">In Development</span></div>
+      <div class="signature-card" aria-label="Made by Aaron with Chat GPT"><span class="signature-spark">✦</span><span class="signature-main">Made by <strong>Aaron</strong></span><span class="signature-sub">with <b>Chat GPT</b></span><span class="signature-line"></span><span class="signature-caption">Built for better fieldwork</span></div>
+    </section>
+    <div class="notice" id="notice">Dashboard loaded. Select Level Book to choose a calculation method.</div>
+  </section>
+
+  <section id="savedroads" class="page">
+    <button class="back" onclick="showPage('dashboard')">← Back to dashboard</button>
+    <section class="hero"><div class="eyebrow">PROJECTS</div><h2>My Saved Road Surveys</h2><p>Open a saved road, continue field readings, or delete a project you no longer need.</p></section>
+    <section class="panel" style="margin-top:16px">
+      <p class="small-note">Saved surveys are stored separately in this browser on this device. Save/update a road from its Level Book or LBD page.</p>
+      <div id="savedSurveyProjects" aria-live="polite"></div>
+    </section>
+  </section>
+
+  <section id="levelbook" class="page">
+    <button class="back" onclick="showPage('dashboard')">← Back to dashboard</button>
+    <section class="hero"><div class="eyebrow">LEVEL BOOK</div><h2>Choose a method</h2><p>Select the levelling calculation method you want to use.</p></section>
+    <div class="method-grid">
+      <button class="method" onclick="chooseMethod('rise-fall')"><div class="symbol">↗ ↘</div><h3>Rise and Fall Method</h3><p>Calculate rise or fall between consecutive staff readings and determine reduced levels.</p></button>
+      <button class="method" onclick="chooseMethod('height-instrument')"><div class="symbol">⊥</div><h3>Height of Instrument Method</h3><p>Calculate height of instrument (HI) and reduced levels from backsight, intermediate sight and foresight readings.</p></button>
+      <button class="method" onclick="openLBD()"><div class="symbol">L × B × D</div><h3>LBD (Length × Breadth × Depth)</h3><p>Record road length, survey interval, top width, side projections and depths at each chainage.</p></button>
+    </div>
+  </section>
+
+  <section id="lbdmethod" class="page">
+    <button class="back" onclick="showPage('levelbook')">← Back to methods</button>
+    <section class="hero"><div class="eyebrow">LBD RECORD</div><h2>LBD (Length × Breadth × Depth)</h2><p>Enter cross-section measurements at each survey chainage. This method does not use BS, IS or FS readings.</p></section>
+    <section class="panel" style="margin-top:16px">
+      <div class="form-grid">
+        <div class="field"><label for="lbdRoadName">Name of Proposed Road</label><input id="lbdRoadName" type="text" placeholder="Enter proposed road name"></div>
+        <div class="field"><label for="lbdRoadLength">Road Length (km)</label><input id="lbdRoadLength" type="number" min="0.001" step="any" placeholder="Enter total road length"></div>
+        <div class="field"><label for="lbdInterval">Survey Interval</label><select id="lbdInterval"><option value="25">25 m</option><option value="50">50 m</option><option value="75">75 m</option><option value="100">100 m</option></select></div>
+      </div>
+      <p class="small-note">Rows are generated from 0+000 to the road end. Enter one measurement at a time and press Record Measurement. The red indicator confirms exactly where it was saved.</p>
+      <div class="panel" style="margin-top:14px;background:#f8fafc;padding:16px">
+        <h3 style="margin:0 0 6px">Measurement Entry Order</h3>
+        <p class="small-note" style="margin-top:0">Drag and drop the rows into your preferred sequence. This order repeats at every chainage.</p>
+        <div id="lbdOrderList" aria-label="Measurement entry order"></div>
+        <button type="button" class="primary" style="margin-top:10px;background:#0f766e" onclick="applyLBDOrder()">✓ Apply Measurement Order</button>
+        <p id="lbdOrderStatus" class="small-note" aria-live="polite">Default order is shown below.</p>
+      </div>
+      <button type="button" class="primary" style="margin-top:14px" onclick="generateLBDRows()">Generate / Update Chainage Rows</button>
+      <div id="lbdEntry" class="panel" style="margin-top:14px;background:#f8fafc;padding:16px">
+        <div class="field"><label for="lbdMeasureType">Measurement</label><select id="lbdMeasureType" onchange="syncLBDEntry()"><option value="topWidth">Top Width (m)</option><option value="leftProjection">Left Sloping Horizontal Projection (m)</option><option value="rightProjection">Right Sloping Horizontal Projection (m)</option><option value="leftDepth">Left Depth (m)</option><option value="rightDepth">Right Depth (m)</option></select></div>
+        <div class="field" style="margin-top:12px"><label for="lbdMeasureValue">Measurement Value (m)</label><input id="lbdMeasureValue" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter measurement"></div>
+        <button id="lbdRecordBtn" type="button" class="primary" style="margin-top:14px" onpointerdown="keepLBDKeyboard(event)" onclick="recordLBDMeasurement()">＋ Record Measurement</button>
+        <div id="lbdRecordedIn" style="margin-top:10px;background:#b91c1c;color:#ffeb3b;border-radius:10px;padding:14px;text-align:center;font-weight:800">RECORDED IN: Not recorded yet</div>
+        <p id="lbdNextHint" class="small-note" style="margin-top:10px">Generate chainage rows to begin.</p>
+      </div>
+      <div id="lbdRows" class="table-wrap" style="margin-top:16px"></div>
+      <button type="button" class="primary" style="margin-top:14px;background:#0f766e" onclick="saveLBDProject()">💾 Save LBD Survey</button>
+      <button type="button" class="primary" style="margin-top:10px" onclick="exportLBDCSV()">↓ Export LBD Table to CSV</button>
+      <button type="button" class="primary" style="margin-top:10px;background:#991b1b" onclick="resetLBDData()">↻ Reset LBD Survey</button>
+      <p class="small-note" id="lbdStatus" aria-live="polite">LBD measurements are saved automatically on this device.</p>
+    </section>
+  </section>
+
+  <section id="methodselected" class="page">
+    <button class="back" onclick="showPage('levelbook')">← Back to methods</button>
+    <section class="hero"><div class="eyebrow">LEVEL BOOK</div><h2 id="selectedTitle">Method</h2><p id="selectedDescription">Method selected.</p></section>
+    <div id="hiForm" class="panel" style="margin-top:16px;display:none">
+      <div class="form-grid">
+        <div class="field"><label for="roadName">Name of Proposed Road</label><input id="roadName" type="text" placeholder="Enter proposed road name"></div>
+        <div class="field"><label for="levelStage">Levelling Stage</label><select id="levelStage"><option>Initial Level</option><option>Embankment</option><option>Subgrade</option><option>Sub base</option><option>Base Course</option><option>Bituminous Base Course</option><option>Surface Course</option><option>Shoulder</option><option>Drain Bottom</option><option value="Other">Other</option></select>
+      <div class="field" id="otherStageField" style="display:none">
+        <label for="otherStageName">Current Levelling Stage</label>
+        <input id="otherStageName" type="text" placeholder="Enter current stage">
+      </div></div>
+        <div class="field"><label for="roadLength">Road Length (km)</label><input id="roadLength" type="number" min="0.001" step="any" placeholder="Enter total road length" oninput="scheduleChainageUpdate()"></div>
+        <div class="field"><label for="surveyInterval">Survey Interval</label><select id="surveyInterval" onchange="updateChainages();updateTotalSurveyPoints()"><option value="25">25 m</option><option value="50">50 m</option><option value="75">75 m</option><option value="100">100 m</option></select></div>
+        
+        <div class="field"><label for="benchmarkType">Type of Benchmark</label><select id="benchmarkType"><option>Temporary Bench Mark</option><option>Permanent Benchmark</option></select></div>
+        <div class="field"><label for="benchmarkRL">Benchmark RL (m)</label><input id="benchmarkRL" type="number" step="any" placeholder="Enter known RL"></div>
+        
+      </div>
+      <div class="section-title"><h2>Road Cross-Section</h2><p>Choose the number of cross-section points on each side, excluding the centre. Inputs will be created symmetrically on both sides.</p></div>
+      <svg class="road-cross-illustration" viewBox="0 0 520 150" role="img" aria-label="Road cross-section illustration showing left offsets, centre line and right offsets">
+        <rect x="10" y="10" width="500" height="130" rx="10" fill="#f8fbff"/>
+        <path d="M55 112 L115 83 L190 61 L260 48 L330 61 L405 83 L465 112" fill="none" stroke="#145b91" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M55 112 L465 112" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 5"/>
+        <line x1="260" y1="25" x2="260" y2="125" stroke="#0b3b67" stroke-width="2" stroke-dasharray="5 4"/>
+        <circle cx="55" cy="112" r="4" fill="#145b91"/><circle cx="115" cy="83" r="4" fill="#145b91"/><circle cx="190" cy="61" r="4" fill="#145b91"/><circle cx="260" cy="48" r="5" fill="#0b3b67"/><circle cx="330" cy="61" r="4" fill="#145b91"/><circle cx="405" cy="83" r="4" fill="#145b91"/><circle cx="465" cy="112" r="4" fill="#145b91"/>
+        <g font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0b3b67" text-anchor="middle">
+          <text x="55" y="129">L3</text><text x="115" y="99">L2</text><text x="190" y="77">L1</text><text x="260" y="36">C</text><text x="330" y="77">R1</text><text x="405" y="99">R2</text><text x="465" y="129">R3</text>
+        </g>
+        <text x="260" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Illustrative road profile</text>
+      </svg>
+      <div class="field">
+        <label for="sidePointCount">Cross-section points per side (excluding centre)</label>
+        <select id="sidePointCount" onchange="updateTotalSurveyPoints()">
+          <option value="1">1 point per side (L1, C, R1)</option>
+          <option value="2">2 points per side (L2, L1, C, R1, R2)</option>
+          <option value="3" selected>3 points per side (L3, L2, L1, C, R1, R2, R3)</option>
+          <option value="4">4 points per side</option>
+          <option value="5">5 points per side</option>
+          <option value="6">6 points per side</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="totalSurveyPoints">Possible Total Survey Points</label>
+        <input id="totalSurveyPoints" type="text" readonly value="Enter road length first">
+        <small id="surveyPointCalculation" class="muted">Chainage points × cross-section positions.</small>
+      </div>
+      <div class="cross-road-wrap" aria-label="Road cross-section readings">
+        <p class="muted" id="crossSectionNote">The selected number of cross-section points is recorded for reference. Enter BS, IS and FS readings below; RL is calculated using the Height of Instrument method.</p>
+      </div>
+      <div class="field"><label for="chainage">Chainage</label><select id="chainage" disabled><option value="">Enter road length first</option></select></div>
+      <div class="section-title"><h2>Staff Reading</h2><p>Select BS, IS or FS, enter the staff reading in metres, then record it.</p></div>
+      <div class="field">
+        <label for="defaultSide">Default side to measure after Centre</label>
+        <select id="defaultSide" onchange="setDefaultSide(this.value)">
+          <option value="Left" selected>Left</option>
+          <option value="Right">Right</option>
+        </select>
+        <p class="small-note">After recording Centre (C), the app will automatically select your chosen default side.</p>
+      </div>
+      <div class="field">
+        <label>Side</label>
+        <div class="position-buttons" id="readingPositionGroup" role="group" aria-label="Reading side or centre">
+          <button type="button" class="position-btn side-left" data-position="Left" onpointerdown="event.preventDefault()" onclick="selectPosition('Left')">Left</button>
+          <button type="button" class="position-btn side-centre selected" data-position="Centre" onpointerdown="event.preventDefault()" onclick="selectPosition('Centre')">C</button>
+          <button type="button" class="position-btn side-right" data-position="Right" onpointerdown="event.preventDefault()" onclick="selectPosition('Right')">Right</button>
+          <button type="button" class="position-btn side-tbm" data-position="TBM" onpointerdown="event.preventDefault()" onclick="selectPosition('TBM')">TBM</button>
+        </div>
+        <p class="small-note" id="selectedPositionNote">Selected side: Centre. Position: C.</p>
+      </div>
+      <div class="reading-types" role="group" aria-label="Staff reading type">
+        <button type="button" class="type-btn selected" data-reading="BS" onpointerdown="event.preventDefault()" onclick="selectReadingType('BS')">BS</button>
+        <button type="button" class="type-btn" data-reading="IS" onpointerdown="event.preventDefault()" onclick="selectReadingType('IS')">IS</button>
+        <button type="button" class="type-btn" data-reading="FS" onpointerdown="event.preventDefault()" onclick="selectReadingType('FS')">FS</button>
+      </div>
+      <div class="field"><label for="staffReading">Staff Reading (m)</label><input id="staffReading" type="number" min="0" step="any" placeholder="Enter staff reading"></div>
+      <div class="field"><label for="readingRemark">Remark (optional)</label><input id="readingRemark" type="text" maxlength="180" placeholder="Enter remark (optional)"></div>
+      <button type="button" class="primary" style="margin-top:14px" onclick="recordReading()">＋ Record Reading</button>
+      <div id="recordingPreview" class="recording-preview" role="status" aria-live="polite">RECORDED IN: Chainage — | Centre | C | BS</div>
+      <button type="button" id="endSurveyBtn" class="primary" style="display:none;margin-top:8px;background:#b91c1c" onclick="endSurvey()">✓ End Survey</button>
+      <p id="endSurveyStatus" class="small-note" style="display:none" aria-live="polite"></p>
+      <p class="small-note" id="recordStatus" aria-live="polite">Ready to record the first reading.</p>
+      <button type="button" class="primary" style="margin-top:18px" onclick="exportExcel()">↓ Export Level Book to Excel</button>
+      <p class="small-note">Select a Side (Left, Right, C or TBM). Position is numbered automatically as L1, L2… or R1, R2… at each chainage. Choose whether Left or Right activates after recording Centre.</p>
+      <button type="button" class="primary" style="margin-top:14px;background:#0f766e" onclick="saveSurveyProject()">＋ Save / Update This Road</button>
+      <p class="small-note">Manage and reopen saved road projects from the separate <strong>Saved Road Surveys</strong> tab on the dashboard.</p>
+      <div class="table-wrap"><table><thead><tr><th>No.</th><th>Chainage</th><th>Side</th><th>Position</th><th>Remark</th><th>BS (m)</th><th>IS (m)</th><th>FS (m)</th><th class="rise-fall-col">Rise (m)</th><th class="rise-fall-col">Fall (m)</th><th class="hi-col">HI (m)</th><th>RL (m)</th><th>Cross-section points</th></tr></thead><tbody id="readingRows"><tr><td colspan="10">No readings recorded yet.</td></tr></tbody></table></div>
+      <button type="button" class="primary" style="margin-top:16px" onclick="checkArithmetic()">✓ Check Arithmetic</button>
+      <div id="arithmeticResult" class="notice" style="display:none;margin-top:10px" aria-live="polite"></div>
+      <button type="button" id="resetSurveyBtn" class="primary" style="margin-top:18px;background:#991b1b" onclick="resetSurveyData()">↻ Reset Survey / Clear All Data</button>
+      <p class="small-note">Survey data is saved automatically on this device. Use Reset only when you want to permanently clear this survey.</p>
+    </div>
+  </section>
+</main>
+<footer><span>Auto Level Survey</span><span>Local browser app</span></footer>
+<script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function openLevelBook(){showPage('levelbook');}
+function openSavedRoadSurveys(){renderSavedSurveyProjects();showPage('savedroads');}
+function updateEndSurveyButton(){
+  const select=document.getElementById('chainage');
+  const button=document.getElementById('endSurveyBtn');
+  if(!select||!button)return;
+  const atRoadEnd=select.options.length>1 && select.selectedIndex===select.options.length-1;
+  // Offer End Survey only after an FS has actually been recorded at the final chainage.
+  // The user may leave it untouched and record a TBM or other closing reading.
+  const finalChainage=select.value;
+  const finalFSRecorded=readings.some(r=>String(r.chainage)===String(finalChainage) && r.type==='FS' && r.side!=='TBM');
+  button.style.display=(atRoadEnd && finalFSRecorded)?'block':'none';
+}
+function endSurvey(){
+  surveyEnded=true;
+  const status=document.getElementById('endSurveyStatus');
+  status.style.display='block';
+  status.textContent='Survey end confirmed at the final FS. You can still select TBM and record a closing reading if required.';
+  // Lock survey data entry once the user confirms the survey has ended.
+  awaitingChangePointBS=false;
+  changePointPosition=null;
+  const recordButton = document.querySelector('button[onclick="recordReading()"]');
+  if (recordButton) {
+    recordButton.disabled = true;
+    recordButton.textContent = '✓ Survey Ended — Recording Disabled';
+  }
+  ['chainage','defaultSide','sidePointCount','staffReading','readingRemark'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = true;
+  });
+  document.querySelectorAll('#readingPositionGroup button, .reading-types button').forEach(btn => {
+    btn.disabled = true;
+  });
+  status.textContent='Survey ended. New readings and survey input are now disabled.';
+  document.getElementById('recordStatus').textContent='Survey ended. Recording is disabled.';
+  updateRecordingPreview();
+  persistSurveyState();
+}
+
+function formatChainage(metres){
+  const km=Math.floor(metres/1000);
+  const remainder=Math.round(metres-km*1000);
+  return km+'+'+String(remainder).padStart(3,'0');
+}
+let chainageUpdateTimer=null;
+function scheduleChainageUpdate(){
+  updateTotalSurveyPoints();
+  clearTimeout(chainageUpdateTimer);
+  chainageUpdateTimer=setTimeout(updateChainages,250);
+}
+function updateChainages(){
+  const lengthKm=Number(document.getElementById('roadLength').value);
+  const interval=Number(document.getElementById('surveyInterval').value);
+  const select=document.getElementById('chainage');
+  select.innerHTML='';
+  if(!Number.isFinite(lengthKm)||lengthKm<=0){
+    select.disabled=true;select.add(new Option('Enter road length first',''));
+    updateTotalSurveyPoints();
+    updateEndSurveyButton();
+    return;
+  }
+  const lengthM=Math.round(lengthKm*1000*1000)/1000;
+  const points=[];
+  for(let m=0;m<=lengthM+1e-8;m+=interval){points.push(Math.round(m*1000)/1000);}
+  // Always include the exact road end when it does not fall on the selected interval.
+  if(points.length===0||Math.abs(points[points.length-1]-lengthM)>1e-8)points.push(lengthM);
+  select.disabled=false;
+  points.forEach((m,i)=>select.add(new Option(formatChainage(m)+(Math.abs(m-lengthM)<1e-8?' (Road End)':''),formatChainage(m))));
+  updateTotalSurveyPoints();
+  updateEndSurveyButton();
+  if(!restoringSurvey)persistSurveyState();
+}
+function showNotice(message){document.getElementById('notice').textContent=message;}
+let selectedReadingType='BS';
+let selectedPosition='Centre';
+let readings=[];
+let currentHI=null;
+let awaitingChangePointBS=false;
+let changePointPosition=null;
+let surveyEnded=false;
+const SURVEY_STORAGE_KEY='autoLevelSurveyState_v1';
+let restoringSurvey=false;
+function persistSurveyState(){
+  if(restoringSurvey)return;
+  try{
+    const ids=['roadName','levelStage','otherStageName','roadLength','surveyInterval','benchmarkType','benchmarkRL','sidePointCount','defaultSide','chainage','staffReading','readingRemark'];
+    const fields={}; ids.forEach(id=>{const el=document.getElementById(id);if(el)fields[id]=el.value;});
+    const state={version:1,fields,readings,selectedReadingType,selectedPosition,defaultMeasurementSide,lastSurveyPosition,currentHI,awaitingChangePointBS,changePointPosition,surveyEnded,activePage:document.querySelector('.page.active')?.id||'dashboard',selectedTitle:document.getElementById('selectedTitle')?.textContent||'Method',selectedDescription:document.getElementById('selectedDescription')?.textContent||'Method selected.',recordStatus:document.getElementById('recordStatus')?.textContent||'',endSurveyStatus:document.getElementById('endSurveyStatus')?.textContent||'',endSurveyStatusDisplay:document.getElementById('endSurveyStatus')?.style.display||'none'};
+    localStorage.setItem(SURVEY_STORAGE_KEY,JSON.stringify(state));
+  }catch(e){console.warn('Could not save survey state',e);}
+}
+function resetSurveyData(){
+  if(!confirm('Reset this survey and permanently clear all saved readings and settings on this device?'))return;
+  try{localStorage.removeItem(SURVEY_STORAGE_KEY);}catch(e){}
+  location.reload();
+}
+function applySurveyEndedLock(){
+  if(!surveyEnded)return;
+  const recordButton=document.querySelector('button[onclick="recordReading()"]');
+  if(recordButton){recordButton.disabled=true;recordButton.textContent='✓ Survey Ended — Recording Disabled';}
+  ['roadName','levelStage','otherStageName','roadLength','surveyInterval','benchmarkType','benchmarkRL','sidePointCount','defaultSide','chainage','staffReading','readingRemark'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
+  document.querySelectorAll('#readingPositionGroup button, .reading-types button').forEach(btn=>btn.disabled=true);
+}
+function restoreSurveyState(){
+  let state=null;
+  // A portable HTML copy contains its own snapshot; use it when opened, even in another browser/device.
+  try{
+    const embedded=document.getElementById('embeddedSurveyState');
+    if(embedded && embedded.textContent.trim()) state=JSON.parse(embedded.textContent);
+  }catch(e){state=null;}
+  // Otherwise continue the normal automatic-save session from this browser.
+  if(!state){try{state=JSON.parse(localStorage.getItem(SURVEY_STORAGE_KEY)||'null');}catch(e){state=null;}}
+  if(!state||state.version!==1)return;
+  restoringSurvey=true;
+  try{
+    Object.entries(state.fields||{}).forEach(([id,value])=>{const el=document.getElementById(id);if(el&&id!=='chainage')el.value=value;});
+    updateOtherStageField(); updateChainages();
+    if(state.fields?.chainage){const ch=document.getElementById('chainage');if(ch)ch.value=state.fields.chainage;}
+    readings=Array.isArray(state.readings)?state.readings:[];
+    selectedReadingType=state.selectedReadingType||'BS'; selectedPosition=state.selectedPosition||'Centre';
+    defaultMeasurementSide=state.defaultMeasurementSide||state.fields?.defaultSide||'Left';
+    lastSurveyPosition=state.lastSurveyPosition||'Centre'; currentHI=state.currentHI??null;
+    awaitingChangePointBS=!!state.awaitingChangePointBS; changePointPosition=state.changePointPosition||null; surveyEnded=!!state.surveyEnded;
+    document.getElementById('selectedTitle').textContent=state.selectedTitle||'Height of Instrument Method';
+    document.getElementById('selectedDescription').textContent=state.selectedDescription||'Enter the road and benchmark details, then record BS, IS and FS readings.';
+    document.body.dataset.levelMethod=(state.selectedTitle||'').includes('Rise and Fall')?'rise-fall':'height-instrument';
+    updateMethodTableColumns();
+    document.getElementById('hiForm').style.display='block';
+    document.getElementById('recordStatus').textContent=state.recordStatus||'Restored saved survey.';
+    const endStatus=document.getElementById('endSurveyStatus'); endStatus.textContent=state.endSurveyStatus||''; endStatus.style.display=state.endSurveyStatusDisplay||'none';
+    document.querySelectorAll('.type-btn').forEach(btn=>btn.classList.toggle('selected',btn.dataset.reading===selectedReadingType));
+    document.querySelectorAll('.position-btn').forEach(btn=>btn.classList.toggle('selected',btn.dataset.position===selectedPosition));
+    renderReadings(); updateTotalSurveyPoints(); updateRecordingPreview(); updateEndSurveyButton();
+    if(state.activePage&&document.getElementById(state.activePage))showPage(state.activePage);
+    applySurveyEndedLock();
+  }catch(e){console.warn('Could not restore survey state',e);}
+  finally{restoringSurvey=false;}
+}
+
+function chooseMethod(method){
+  const titles={'rise-fall':'Rise and Fall Method','height-instrument':'Height of Instrument Method'};
+  const descriptions={'rise-fall':'Enter road and benchmark details, then record BS, IS and FS. Rise/Fall and RL are calculated from consecutive readings.','height-instrument':'Enter the road and benchmark details, then record BS, IS and FS readings.'};
+  document.getElementById('selectedTitle').textContent=titles[method];
+  document.getElementById('selectedDescription').textContent=descriptions[method];
+  document.getElementById('hiForm').style.display='block';
+  document.body.dataset.levelMethod=method;
+  updateMethodTableColumns();
+  showPage('methodselected');
+  persistSurveyState();
+}
+
+function updateTotalSurveyPoints(){
+  const roadLengthInput=document.getElementById('roadLength');
+  const intervalInput=document.getElementById('surveyInterval');
+  const output=document.getElementById('totalSurveyPoints');
+  const detail=document.getElementById('surveyPointCalculation');
+  if(!output)return;
+  const lengthKm=Number(roadLengthInput?.value);
+  const interval=Number(intervalInput?.value);
+  const n=Number(document.getElementById('sidePointCount')?.value||3);
+  if(!roadLengthInput || roadLengthInput.value==='' || !Number.isFinite(lengthKm) || lengthKm<=0 || !interval){
+    output.value='Enter road length first';
+    if(detail)detail.textContent='Chainage points × cross-section positions.';
+    return;
+  }
+  const lengthM=lengthKm*1000;
+  const chainagePoints=Math.floor(lengthM/interval)+1+(Math.abs(lengthM%interval)>1e-8?1:0);
+  const crossSectionPositions=2*n+1;
+  const total=chainagePoints*crossSectionPositions;
+  output.value=total.toLocaleString()+' survey points';
+  if(detail)detail.textContent=chainagePoints+' chainage points × '+crossSectionPositions+' positions ('+n+' left + centre + '+n+' right) = '+total+' total survey points.';
+}
+
+function updateOtherStageField(){
+  const stage=document.getElementById('levelStage'), field=document.getElementById('otherStageField');
+  if(stage&&field) field.style.display=stage.value==='Other'?'block':'none';
+}
+
+function selectReadingType(type){
+  selectedReadingType=type;
+  document.querySelectorAll('.type-btn').forEach(btn=>btn.classList.toggle('selected',btn.dataset.reading===type));
+  document.getElementById('recordStatus').textContent=type+' selected. Enter the staff reading and press Record Reading.';
+  updateRecordingPreview();
+  persistSurveyState();
+  const readingInput=document.getElementById('staffReading');
+  if(readingInput)readingInput.focus({preventScroll:true});
+  persistSurveyState();
+}
+let defaultMeasurementSide='Left';
+let lastSurveyPosition='Centre';
+function nextSidePosition(side, chainage){
+  const prefix=side==='Left'?'L':'R';
+  // Count distinct position labels, not reading rows. An FS and its paired
+  // BS share one position and must not cause the next label to skip (L1 -> L3).
+  const usedPositions=new Set(readings
+    .filter(r=>String(r.chainage)===String(chainage) && r.side===side && r.position)
+    .map(r=>r.position));
+  return prefix+(usedPositions.size+1);
+}
+function getPositionLabel(side, chainage){
+  if(side==='Centre') return 'C';
+  if(side==='TBM') return 'TBM';
+  if(side==='Left' || side==='Right') return nextSidePosition(side, chainage || document.getElementById('chainage')?.value || '');
+  return '';
+}
+function setDefaultSide(side){
+  defaultMeasurementSide=(side==='Right'?'Right':'Left');
+  const readingInput=document.getElementById('staffReading');
+  if(readingInput)readingInput.focus({preventScroll:true});
+}
+function selectPosition(position){
+  selectedPosition=position;
+  if(position!=='TBM') lastSurveyPosition=position;
+  document.querySelectorAll('.position-btn').forEach(btn=>btn.classList.toggle('selected',btn.dataset.position===position));
+  const chainage=document.getElementById('chainage')?.value || '';
+  const positionLabel=getPositionLabel(position,chainage);
+  const note=document.getElementById('selectedPositionNote');
+  if(note)note.textContent='Selected side: '+position+'. Position: '+positionLabel+'. The reading will be recorded under this side and position.';
+  updateRecordingPreview();
+  // At the final cross-section position of the final chainage, default to FS.
+  // The user can still change it to IS if they intend to take a closing TBM reading.
+  const chainageSelect=document.getElementById('chainage');
+  const atFinalChainage=!!(chainageSelect && chainageSelect.options.length>1 && chainageSelect.selectedIndex===chainageSelect.options.length-1);
+  const pointsPerSide=Number(document.getElementById('sidePointCount')?.value||3);
+  const finalSide=defaultMeasurementSide==='Left'?'Right':'Left';
+  const isLastPosition=(position===finalSide && positionLabel===((finalSide==='Left'?'L':'R')+pointsPerSide));
+  if(atFinalChainage && isLastPosition && !awaitingChangePointBS){
+    selectReadingType('FS');
+  }
+  const readingInput=document.getElementById('staffReading');
+  if(readingInput)readingInput.focus({preventScroll:true});
+  persistSurveyState();
+}
+
+function updateRecordingPreview(){
+  const preview=document.getElementById('recordingPreview');
+  if(!preview)return;
+  const chainage=document.getElementById('chainage')?.value || '—';
+  let side=selectedPosition;
+  let position=getPositionLabel(side,chainage);
+  // An FS is followed by a BS on the exact same change-point position.
+  if(selectedReadingType==='BS' && awaitingChangePointBS && changePointPosition && String(changePointPosition.chainage)===String(chainage)){
+    side=changePointPosition.side;
+    position=changePointPosition.position;
+  }
+  preview.textContent='RECORDED IN: Chainage '+chainage+' | '+side+' | '+position+' | '+selectedReadingType;
+}
+
+function recordReading(){
+  const road=document.getElementById('roadName').value.trim();
+  const stageSelect=document.getElementById('levelStage'); const stage=stageSelect.value==='Other'?(document.getElementById('otherStageName').value.trim()||'Other'):stageSelect.value;
+  const benchmark=document.getElementById('benchmarkType').value;
+  const rlText=document.getElementById('benchmarkRL').value;
+  const chainage=document.getElementById('chainage').value.trim();
+  const readingText=document.getElementById('staffReading').value;
+  const remark=(document.getElementById('readingRemark').value || '').trim();
+  const status=document.getElementById('recordStatus');
+  if(!road){status.textContent='Please enter the name of the proposed road.';document.getElementById('roadName').focus();return;}
+  if(!document.getElementById('roadLength').value||Number(document.getElementById('roadLength').value)<=0){status.textContent='Please enter a valid road length in kilometres.';document.getElementById('roadLength').focus();return;}
+  if(!chainage){status.textContent='Please select a chainage point.';document.getElementById('chainage').focus();return;}
+  const activePositionButton=document.querySelector('.position-btn.selected');
+  if(activePositionButton) selectedPosition=activePositionButton.dataset.position;
+  if(!selectedPosition){
+    status.textContent='Please select a reading position (Left, Right, Centre or TBM) before recording.';
+    document.querySelector('.position-btn')?.focus();
+    return;
+  }
+  if(rlText===''||!Number.isFinite(Number(rlText))){status.textContent='Please enter the benchmark RL in metres.';document.getElementById('benchmarkRL').focus();return;}
+  if(readingText===''||!Number.isFinite(Number(readingText))||Number(readingText)<0){status.textContent='Please enter a valid staff reading in metres.';document.getElementById('staffReading').focus();return;}
+  const reading=Number(readingText), benchmarkRL=Number(rlText);
+  let hi='', rl='', rise='', fall='';
+  const isRiseFall=document.body.dataset.levelMethod==='rise-fall';
+  if(readings.length===0 && selectedReadingType!=='BS'){
+    status.textContent='The first reading must be BS to establish the starting RL.';return;
+  }
+  if(isRiseFall){
+    if(readings.length===0){rl=benchmarkRL;}
+    else{
+      const previous=readings[readings.length-1];
+      const sameCP=selectedReadingType==='BS'&&previous.type==='FS'&&String(previous.chainage)===String(chainage)&&previous.side===selectedPosition;
+      if(sameCP){rl=Number(previous.rl);}
+      else{const diff=Number(previous.reading)-reading;if(diff>0){rise=diff;rl=Number(previous.rl)+diff;}else if(diff<0){fall=-diff;rl=Number(previous.rl)+diff;}else{rise=0;fall=0;rl=Number(previous.rl);}}
+    }
+  }else if(selectedReadingType==='BS'){
+    let knownRL=benchmarkRL;
+    if(readings.length>0){const previous=readings[readings.length-1];if(previous.rl!=='')knownRL=Number(previous.rl);}
+    currentHI=knownRL+reading;hi=currentHI;rl=knownRL;
+  }else{
+    if(currentHI===null){status.textContent='Record a BS first to establish the Height of Instrument.';return;}
+    hi=currentHI;rl=currentHI-reading;
+  }
+  const n=Number(document.getElementById('sidePointCount')?.value||3);
+  const crossSectionPointCount=2*n+1;
+  let positionLabel;
+  if(selectedReadingType==='BS' && awaitingChangePointBS && changePointPosition && changePointPosition.chainage===chainage){
+    selectedPosition=changePointPosition.side;
+    document.querySelectorAll('.position-btn').forEach(btn=>btn.classList.toggle('selected',btn.dataset.position===selectedPosition));
+    positionLabel=changePointPosition.position;
+  } else { positionLabel=getPositionLabel(selectedPosition,chainage); }
+  const recordedPositionSide=selectedPosition;
+  const isTBMReading=recordedPositionSide==='TBM';
+  readings.push({road,stage,benchmark,chainage,side:recordedPositionSide,position:positionLabel,remark,type:selectedReadingType,reading,hi,rl,rise,fall,crossSectionPointCount});
+  renderReadings();
+  updateEndSurveyButton();
+
+  // Reading-type workflow: BS -> IS, IS stays IS, FS -> BS.
+  const recordedType=selectedReadingType;
+  if(recordedType==='FS'){ awaitingChangePointBS=true; changePointPosition={chainage,side:selectedPosition,position:positionLabel}; selectReadingType('BS'); }
+  else if(recordedType==='BS'){ if(awaitingChangePointBS){awaitingChangePointBS=false;changePointPosition=null;} selectReadingType('IS'); }
+  // IS deliberately remains selected after an intermediate reading.
+  let chainageMessage='';
+  let pointsLeftMessage='';
+  if(isTBMReading){
+    // TBM is a reference point, not a cross-section position. Restore the prior survey position.
+    selectPosition(lastSurveyPosition);
+  } else {
+    // Centre should advance to the configured side only for BS/IS, not after FS.
+    if(recordedType!=='FS' && selectedPosition==='Centre'){
+      selectPosition(defaultMeasurementSide);
+    } else if(recordedType!=='FS' && (selectedPosition==='Left' || selectedPosition==='Right')){
+      // Once the selected number of points on this side has been recorded,
+      // automatically switch to the opposite side for this chainage.
+      const pointsPerSide=Number(document.getElementById('sidePointCount')?.value||3);
+      // Count unique survey positions, not reading rows. An FS and its paired
+      // BS at the same change point must count as one position (e.g. L1), so
+      // the next IS remains on L2 rather than jumping to the Right side.
+      const readingsOnCurrentSide=new Set(readings.filter(r=>
+        String(r.chainage)===String(chainage) && r.side===selectedPosition
+      ).map(r=>r.position)).size;
+      if(readingsOnCurrentSide>=pointsPerSide){
+        // After the required Right-side points, return to Centre.
+        // After the required Left-side points, switch to Right.
+        if(selectedPosition==='Right'){
+          selectPosition('Centre');
+        }else{
+          selectPosition('Right');
+        }
+      }
+    }
+
+    // Do not advance chainage immediately after an FS. The paired BS must
+    // be recorded on the exact same chainage and position as that FS.
+    // Advance only after the BS has completed the change-point pair.
+    const readingsAtThisChainage=new Set(readings.filter(r=>String(r.chainage)===String(chainage) && r.side!=='TBM').map(r=>r.position)).size;
+    if(recordedType!=='FS' && !awaitingChangePointBS && readingsAtThisChainage>=crossSectionPointCount){
+      const chainageSelect=document.getElementById('chainage');
+      const currentIndex=chainageSelect.selectedIndex;
+      if(currentIndex>=0 && currentIndex<chainageSelect.options.length-1){
+        chainageSelect.selectedIndex=currentIndex+1;
+        updateEndSurveyButton();
+        chainageMessage=' Required '+crossSectionPointCount+' readings completed; moved to chainage '+chainageSelect.value+'.';
+      }else{
+        chainageMessage=' Required '+crossSectionPointCount+' readings completed at the final chainage.';
+      }
+    }
+
+    const uniquePositionsAtChainage=new Set(readings.filter(r=>String(r.chainage)===String(chainage) && r.side!=='TBM').map(r=>r.position)).size;
+    const remaining=Math.max(0,crossSectionPointCount-uniquePositionsAtChainage);
+    pointsLeftMessage=' '+remaining+' survey point'+(remaining===1?'':'s')+' left at this chainage.';
+  }
+  status.textContent='Recorded '+recordedType+' reading of '+reading.toFixed(3)+' m at chainage '+chainage+'. RL: '+Number(rl).toFixed(3)+' m.'+chainageMessage;
+  document.getElementById('staffReading').value='';
+  document.getElementById('readingRemark').value='';
+  updateRecordingPreview();
+  document.getElementById('staffReading').focus();
+  persistSurveyState();
+}
+function buildLevelBookRows(){
+  const rows=[];
+  readings.forEach(r=>{
+    const item={road:r.road,stage:r.stage,benchmark:r.benchmark,chainage:r.chainage,side:r.side||'',position:r.position||'',remark:r.remark||'',BS:'',IS:'',FS:'',HI:'',RL:'',points:r.crossSectionPointCount};
+    item[r.type]=Number(r.reading).toFixed(3);
+    if(r.hi!=='')item.HI=Number(r.hi).toFixed(3);
+    if(r.rl!=='')item.RL=Number(r.rl).toFixed(3);
+    const previous=rows.length?rows[rows.length-1]:null;
+    // Standard change-point line: an FS and the following BS may share a row
+    // only when they refer to the same chainage. IS readings always get their own row.
+    if(r.type==='BS' && previous && previous.FS!=='' && String(previous.chainage)===String(r.chainage)){
+      previous.BS=item.BS;
+      previous.position=item.position || previous.position;
+      previous.remark=[previous.remark,item.remark].filter(Boolean).join(' / ');
+      previous.HI=item.HI || previous.HI;
+      previous.points=item.points;
+    }else{
+      rows.push(item);
+    }
+  });
+  rows.forEach((r,i)=>r.no=i+1);
+  return rows;
+}
+function updateMethodTableColumns(){
+  const riseFall=document.body.dataset.levelMethod==='rise-fall';
+  document.querySelectorAll('.rise-fall-col').forEach(el=>el.style.display=riseFall?'table-cell':'none');
+  document.querySelectorAll('.hi-col').forEach(el=>el.style.display=riseFall?'none':'table-cell');
+  const note=document.getElementById('crossSectionNote');
+  if(note)note.textContent=riseFall?'Rise and Fall method compares each new point with the previous reading. The FS and paired BS at a change point share one RL.':'The selected number of cross-section points is recorded for reference. Enter BS, IS and FS readings below; RL is calculated using the Height of Instrument method.';
+}
+function renderReadings(){
+  const body=document.getElementById('readingRows');body.innerHTML='';
+  const rows=buildLevelBookRows();const isRF=document.body.dataset.levelMethod==='rise-fall';
+  if(isRF){let prevReading=null,prevRL=null,prevFS=false,prevKey='';rows.forEach(g=>{g.Rise='';g.Fall='';const typ=g.BS!==''?'BS':(g.IS!==''?'IS':'FS');const val=Number(g[typ]);const key=String(g.chainage)+'|'+g.side+'|'+g.position;if(prevReading===null){prevRL=Number(document.getElementById('benchmarkRL').value);g.RL=prevRL.toFixed(3);prevReading=val;prevFS=typ==='FS';prevKey=key;return;}if(typ==='BS'&&prevFS&&key===prevKey){g.RL=prevRL.toFixed(3);prevReading=val;prevFS=false;return;}const d=prevReading-val;if(d>0)g.Rise=d.toFixed(3);else if(d<0)g.Fall=(-d).toFixed(3);prevRL+=d;g.RL=prevRL.toFixed(3);prevReading=val;prevFS=typ==='FS';prevKey=key;});}
+  if(rows.length===0){body.innerHTML='<tr><td colspan="13">No readings recorded yet.</td></tr>';updateMethodTableColumns();return;}
+  rows.forEach(g=>{const tr=document.createElement('tr');[g.no,g.chainage,g.side||'—',g.position||'—',g.remark||'—',g.BS||'—',g.IS||'—',g.FS||'—',isRF?(g.Rise||'—'):'—',isRF?(g.Fall||'—'):'—',isRF?'—':(g.HI||'—'),g.RL||'—',g.points].forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if((i===8||i===9)&&!isRF)td.style.display='none';if(i===10&&isRF)td.style.display='none';tr.appendChild(td);});body.appendChild(tr);});updateMethodTableColumns();
+}
+
+function checkArithmetic(){
+  const result=document.getElementById('arithmeticResult');
+  result.style.display='block';
+  if(readings.length===0){
+    result.textContent='No readings available. Record readings before performing the arithmetic check.';
+    return;
+  }
+  const bsSum=readings.filter(r=>r.type==='BS').reduce((sum,r)=>sum+Number(r.reading),0);
+  const fsSum=readings.filter(r=>r.type==='FS').reduce((sum,r)=>sum+Number(r.reading),0);
+  const firstRL=Number(document.getElementById('benchmarkRL').value);
+  const lastReading=readings[readings.length-1];
+  const lastRL=Number(lastReading.rl);
+  if(!Number.isFinite(firstRL)||!Number.isFinite(lastRL)){
+    result.textContent='Unable to check: first RL or last RL is missing.';
+    return;
+  }
+  const readingDifference=bsSum-fsSum;
+  const levelDifference=lastRL-firstRL;
+  if(document.body.dataset.levelMethod==='rise-fall'){
+    const rows=buildLevelBookRows();renderReadings();
+    const rises=readings.reduce((a,r)=>a+Number(r.rise||0),0), falls=readings.reduce((a,r)=>a+Number(r.fall||0),0);
+    const diff=rises-falls, err=diff-levelDifference;result.innerHTML='';const t=document.createElement('strong');t.textContent=Math.abs(err)<=0.001?'✓ Rise/Fall Arithmetic Check PASSED':'⚠ Rise/Fall Arithmetic Check DOES NOT MATCH';result.appendChild(t);const d=document.createElement('div');d.style.whiteSpace='pre-line';d.style.marginTop='8px';d.textContent='Σ BS = '+bsSum.toFixed(3)+' m\nΣ FS = '+fsSum.toFixed(3)+' m\nΣ BS − Σ FS = '+readingDifference.toFixed(3)+' m\n\nΣ Rise = '+rises.toFixed(3)+' m\nΣ Fall = '+falls.toFixed(3)+' m\nΣ Rise − Σ Fall = '+diff.toFixed(3)+' m\nLast RL − First RL = '+levelDifference.toFixed(3)+' m\nRise/Fall difference (error) = '+err.toFixed(3)+' m\nBS/FS check difference = '+(readingDifference-levelDifference).toFixed(3)+' m';result.appendChild(d);return;
+  }
+  const error=readingDifference-levelDifference;
+  const tolerance=0.001;
+  const passed=Math.abs(error)<=tolerance;
+  result.innerHTML='';
+  const title=document.createElement('strong');
+  title.textContent=passed?'✓ Arithmetic Check PASSED':'⚠ Arithmetic Check DOES NOT MATCH';
+  result.appendChild(title);
+  const details=document.createElement('div');
+  details.style.marginTop='8px';
+  details.style.whiteSpace='pre-line';
+  details.textContent='ΣBS = '+bsSum.toFixed(3)+' m\nΣFS = '+fsSum.toFixed(3)+' m\nΣBS − ΣFS = '+readingDifference.toFixed(3)+' m\nLast RL − First RL = '+levelDifference.toFixed(3)+' m\nDifference (error) = '+error.toFixed(3)+' m';
+  result.appendChild(details);
+  const note=document.createElement('div');
+  note.style.marginTop='8px';
+  note.textContent=passed?'Both sides agree within 0.001 m.':'The two sides differ by more than 0.001 m. Review the BS/FS entries and RL calculations.';
+  result.appendChild(note);
+}
+
+function getSurveySnapshot(){
+  const ids=['roadName','levelStage','otherStageName','roadLength','surveyInterval','benchmarkType','benchmarkRL','sidePointCount','defaultSide','chainage','staffReading','readingRemark'];
+  const fields={}; ids.forEach(id=>{const el=document.getElementById(id);if(el)fields[id]=el.value;});
+  return {version:1,fields,readings,selectedReadingType,selectedPosition,defaultMeasurementSide,lastSurveyPosition,currentHI,awaitingChangePointBS,changePointPosition,surveyEnded,activePage:document.querySelector('.page.active')?.id||'dashboard',selectedTitle:document.getElementById('selectedTitle')?.textContent||'Method',selectedDescription:document.getElementById('selectedDescription')?.textContent||'Method selected.',recordStatus:document.getElementById('recordStatus')?.textContent||'',endSurveyStatus:document.getElementById('endSurveyStatus')?.textContent||'',endSurveyStatusDisplay:document.getElementById('endSurveyStatus')?.style.display||'none'};
+}
+function saveSurveyHTML(){
+  try{
+    persistSurveyState();
+    const snapshot=getSurveySnapshot();
+    let html='<!doctype html>\n'+document.documentElement.outerHTML;
+    // Remove a previous embedded snapshot so repeated saves never stack old survey states.
+    html=html.replace(new RegExp("<scr"+"ipt id=\"embeddedSurveyState\" type=\"application/json\">[\\s\\S]*?<\/scr"+"ipt>","gi"),'');
+    const safeJSON=JSON.stringify(snapshot).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+    const embedded='<scr'+'ipt id="embeddedSurveyState" type="application/json">'+safeJSON+'</scr'+'ipt>\n';
+    html=html.replace(/<\/body>/i,embedded+'</body>');
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    const road=(document.getElementById('roadName').value.trim()||'Survey').replace(/[^a-z0-9_-]+/gi,'_');
+    a.href=url;a.download=road+'_Auto_Level_Survey.html';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    document.getElementById('recordStatus').textContent='Portable HTML saved with the current survey data embedded. For later changes, save a new copy again.';
+  }catch(e){
+    document.getElementById('recordStatus').textContent='Could not create the portable HTML file. Please try again.';
+    console.error('Save survey HTML failed',e);
+  }
+}
+
+const SURVEY_PROJECTS_KEY='autoLevelSurveyProjects_v1';
+function getSavedSurveyProjects(){try{const v=JSON.parse(localStorage.getItem(SURVEY_PROJECTS_KEY)||'[]');return Array.isArray(v)?v:[];}catch(e){return [];}}
+function setSavedSurveyProjects(projects){localStorage.setItem(SURVEY_PROJECTS_KEY,JSON.stringify(projects));}
+function saveSurveyProject(){
+ const road=(document.getElementById('roadName').value||'').trim();
+ if(!road){document.getElementById('recordStatus').textContent='Enter the road name before saving this project.';document.getElementById('roadName').focus();return;}
+ const snapshot=getSurveySnapshot();snapshot.activePage='levelbook';const projects=getSavedSurveyProjects();const idx=projects.findIndex(p=>p.name.toLowerCase()===road.toLowerCase());
+ const item={id:idx>=0?projects[idx].id:'road_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name:road,updatedAt:new Date().toISOString(),readingCount:readings.length,state:snapshot};
+ if(idx>=0){if(!confirm('A saved survey named "'+road+'" already exists. Update it with the current readings?'))return;projects[idx]=item;}else projects.unshift(item);
+ try{setSavedSurveyProjects(projects);persistSurveyState();renderSavedSurveyProjects();document.getElementById('recordStatus').textContent='Saved road survey: '+road+'. You can reopen it from the Saved Road Surveys tab on the dashboard.';}catch(e){document.getElementById('recordStatus').textContent='Could not save this project. Browser storage may be full.';}
+}
+function renderSavedSurveyProjects(){
+ const host=document.getElementById('savedSurveyProjects');if(!host)return;const projects=getSavedSurveyProjects();host.innerHTML='';
+ if(!projects.length){const p=document.createElement('p');p.className='small-note';p.textContent='No saved road surveys yet.';host.appendChild(p);return;}
+ projects.forEach(project=>{const card=document.createElement('div');card.style.cssText='display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px;margin-top:8px;border:1px solid #d7e5f1;border-radius:10px;background:#fff';const info=document.createElement('div');info.style.cssText='min-width:0;flex:1';const title=document.createElement('strong');title.textContent=project.name;title.style.display='block';const meta=document.createElement('span');meta.className='small-note';meta.textContent=(project.type==='lbd'?'LBD survey · '+(project.readingCount||0)+' measurements':(project.readingCount||0)+' readings')+' · Updated '+new Date(project.updatedAt||Date.now()).toLocaleString();info.append(title,meta);const actions=document.createElement('div');actions.style.cssText='display:flex;gap:6px';const open=document.createElement('button');open.type='button';open.textContent='Open';open.className='primary';open.style.cssText='width:auto;padding:9px 12px';open.addEventListener('click',()=>openSurveyProject(project.id));const del=document.createElement('button');del.type='button';del.textContent='Delete';del.className='primary';del.style.cssText='width:auto;padding:9px 12px;background:#991b1b';del.addEventListener('click',()=>deleteSurveyProject(project.id));actions.append(open,del);card.append(info,actions);host.appendChild(card);});
+}
+function openSurveyProject(id){const project=getSavedSurveyProjects().find(p=>p.id===id);if(!project)return;if(!confirm('Open saved road survey "'+project.name+'"? Current unsaved changes will be replaced. Save/update the current road first if you need to keep them.'))return;try{if(project.type==='lbd'){localStorage.setItem(LBD_KEY,JSON.stringify(project.lbdState));loadLBDData();showPage('lbdmethod');syncLBDEntry();document.getElementById('lbdStatus').textContent='Opened saved LBD survey: '+project.name;return;}localStorage.setItem(SURVEY_STORAGE_KEY,JSON.stringify(project.state));location.reload();}catch(e){const el=document.getElementById('recordStatus');if(el)el.textContent='Could not open saved project.';}}
+function deleteSurveyProject(id){const projects=getSavedSurveyProjects(),project=projects.find(p=>p.id===id);if(!project)return;if(!confirm('Permanently delete saved road survey "'+project.name+'"?'))return;setSavedSurveyProjects(projects.filter(p=>p.id!==id));renderSavedSurveyProjects();}
+
+function exportExcel(){
+  if(readings.length===0){document.getElementById('recordStatus').textContent='Record at least one reading before exporting.';return;}
+  const headers=['Road Name','Levelling Stage','Benchmark Type','Benchmark RL (m)','No.','Chainage','Side','Position','Remark','BS (m)','IS (m)','FS (m)','Rise (m)','Fall (m)','HI (m)','RL (m)','Cross-section points'];
+  const benchmarkRL=document.getElementById('benchmarkRL').value;
+  const rows=buildLevelBookRows();
+  const data=[headers,...rows.map(g=>[g.road,g.stage,g.benchmark,benchmarkRL,g.no,g.chainage,g.side,g.position,g.remark,g.BS,g.IS,g.FS,g.Rise||'',g.Fall||'',g.HI,g.RL,g.points])];
+  const csv='\uFEFF'+data.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  const safeName=(document.getElementById('roadName').value.trim()||'Level_Book').replace(/[^a-z0-9_-]+/gi,'_');
+  a.href=url;a.download=safeName+'_level_book.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  document.getElementById('recordStatus').textContent='Export complete: each reading has its own row, except an FS and BS at the same chainage share a change-point row.';
+}
+
+const LBD_KEY='autoLevelSurveyLBD_v1';
+let lbdRowsData=[];let lbdCursor=0;let lbdOrder=['topWidth','leftProjection','rightProjection','leftDepth','rightDepth'];let lbdOrderApplied=['topWidth','leftProjection','rightProjection','leftDepth','rightDepth'];
+const LBD_FIELDS=[['topWidth','Top Width (m)'],['leftProjection','Left Sloping Horizontal Projection (m)'],['rightProjection','Right Sloping Horizontal Projection (m)'],['leftDepth','Left Depth (m)'],['rightDepth','Right Depth (m)']];
+function openLBD(){showPage('lbdmethod');loadLBDData();if(!lbdRowsData.length)generateLBDRows();syncLBDEntry();}
+function fmtLBDChainage(m){const km=Math.floor(m/1000),rest=Math.round(m-km*1000);return km+'+'+String(rest).padStart(3,'0');}
+function lbdChainages(){const km=parseFloat(document.getElementById('lbdRoadLength').value),interval=parseInt(document.getElementById('lbdInterval').value,10);if(!Number.isFinite(km)||km<=0||!interval)return [];const total=Math.round(km*1000);const arr=[];for(let m=0;m<total;m+=interval)arr.push(m);if(arr[arr.length-1]!==total)arr.push(total);return arr;}
+function saveLBDData(silent=false){const state={lbdOrder:lbdOrderApplied,roadName:document.getElementById('lbdRoadName').value,roadLength:document.getElementById('lbdRoadLength').value,interval:document.getElementById('lbdInterval').value,rows:lbdRowsData,cursor:lbdCursor};try{localStorage.setItem(LBD_KEY,JSON.stringify(state));if(!silent)document.getElementById('lbdStatus').textContent='LBD survey saved on this device.';}catch(e){document.getElementById('lbdStatus').textContent='Could not save LBD survey in this browser.';}}
+function getLBDState(){return {lbdOrder:lbdOrderApplied,roadName:document.getElementById('lbdRoadName').value,roadLength:document.getElementById('lbdRoadLength').value,interval:document.getElementById('lbdInterval').value,rows:lbdRowsData,cursor:lbdCursor};}
+function saveLBDProject(){
+ const road=(document.getElementById('lbdRoadName').value||'').trim();
+ if(!road){document.getElementById('lbdStatus').textContent='Enter the road name before saving this LBD survey.';document.getElementById('lbdRoadName').focus();return;}
+ saveLBDData(true);const projects=getSavedSurveyProjects();const idx=projects.findIndex(p=>p.name.toLowerCase()===road.toLowerCase());
+ const state=getLBDState();const measurementCount=lbdRowsData.reduce((n,r)=>n+LBD_FIELDS.filter(f=>r[f[0]]!==''&&r[f[0]]!=null).length,0);
+ const item={id:idx>=0?projects[idx].id:'road_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),name:road,type:'lbd',updatedAt:new Date().toISOString(),readingCount:measurementCount,lbdState:state};
+ if(idx>=0){if(!confirm('A saved road survey named "'+road+'" already exists. Update it with this LBD survey?'))return;projects[idx]=item;}else projects.unshift(item);
+ try{setSavedSurveyProjects(projects);renderSavedSurveyProjects();document.getElementById('lbdStatus').textContent='Saved LBD survey: '+road+'. Open it from the Saved Road Surveys tab on the dashboard.';}catch(e){document.getElementById('lbdStatus').textContent='Could not save this LBD project. Browser storage may be full.';}
+}
+function keepLBDKeyboard(event){if(event)event.preventDefault();const input=document.getElementById('lbdMeasureValue');if(input)input.focus();}
+function loadLBDData(){try{const raw=localStorage.getItem(LBD_KEY);if(!raw)return;const st=JSON.parse(raw);document.getElementById('lbdRoadName').value=st.roadName||'';document.getElementById('lbdRoadLength').value=st.roadLength||'';document.getElementById('lbdInterval').value=st.interval||'25';lbdRowsData=Array.isArray(st.rows)?st.rows:[];lbdCursor=Number.isInteger(st.cursor)?st.cursor:0;lbdOrder=validLBDOrder(st.lbdOrder);lbdOrderApplied=[...lbdOrder];renderLBDOrder();renderLBDRows();}catch(e){lbdRowsData=[];lbdCursor=0;}}
+function generateLBDRows(){const chainages=lbdChainages();if(!chainages.length){document.getElementById('lbdStatus').textContent='Enter a valid road length first.';return;}const old=new Map(lbdRowsData.map(r=>[r.chainage,r]));lbdRowsData=chainages.map(m=>({chainage:m,topWidth:old.get(m)?.topWidth??'',leftProjection:old.get(m)?.leftProjection??'',rightProjection:old.get(m)?.rightProjection??'',leftDepth:old.get(m)?.leftDepth??'',rightDepth:old.get(m)?.rightDepth??''}));lbdCursor=Math.min(lbdCursor,Math.max(0,lbdRowsData.length*LBD_FIELDS.length-1));renderLBDRows();syncLBDEntry();saveLBDData(true);document.getElementById('lbdStatus').textContent='Generated '+lbdRowsData.length+' chainage rows. Record each measurement individually.';}
+function validLBDOrder(order){const ids=LBD_FIELDS.map(f=>f[0]);return Array.isArray(order)&&order.length===ids.length&&new Set(order).size===ids.length&&order.every(x=>ids.includes(x))?[...order]:[...ids];}
+function renderLBDOrder(){
+ const host=document.getElementById('lbdOrderList');if(!host)return;host.innerHTML='';
+ lbdOrder.forEach((id,i)=>{
+  const f=LBD_FIELDS.find(x=>x[0]===id),row=document.createElement('div');
+  row.className='lbd-order-row';row.dataset.index=String(i);row.style.cssText='display:flex;align-items:center;gap:12px;padding:12px 10px;margin-top:7px;background:#fff;border:1px solid #d7e5f1;border-radius:10px;min-height:54px;transition:background .12s,border-color .12s';
+  const grip=document.createElement('span');grip.textContent='⠿';grip.title='Drag to reorder';grip.setAttribute('aria-label','Drag to reorder '+f[1]);grip.style.cssText='font-size:27px;line-height:1;color:#1d5f8d;cursor:grab;touch-action:none;user-select:none;padding:3px 7px;border-radius:7px;background:#eaf3fa';
+  const label=document.createElement('strong');label.textContent=(i+1)+'. '+f[1];label.style.cssText='flex:1;min-width:0;font-size:14px;pointer-events:none';
+  row.append(grip,label);host.appendChild(row);
+  grip.addEventListener('pointerdown',ev=>startLBDOrderDrag(ev,row,i));
+  row.draggable=true;row.addEventListener('dragstart',ev=>{if(lbdCursor>0){ev.preventDefault();return;}lbdDragFrom=i;ev.dataTransfer.effectAllowed='move';});
+  row.addEventListener('dragover',ev=>{ev.preventDefault();});
+  row.addEventListener('drop',ev=>{ev.preventDefault();if(lbdDragFrom!==null&&lbdDragFrom!==i)reorderLBDOrder(lbdDragFrom,i);lbdDragFrom=null;});
+  row.addEventListener('dragend',()=>{lbdDragFrom=null;row.style.opacity='1';});
+ });
+ if(lbdCursor>0){host.style.opacity='.78';host.title='Order locked after recording starts';}else{host.style.opacity='1';host.title='Drag rows to reorder';}
+}
+let lbdDragFrom=null,lbdPointerDrag=null;
+function startLBDOrderDrag(ev,row,index){
+ if(lbdCursor>0){document.getElementById('lbdOrderStatus').textContent='Order is locked after recording begins. Reset the survey to change the sequence.';return;}
+ if(ev.button!==undefined&&ev.button!==0)return;ev.preventDefault();lbdPointerDrag={pointerId:ev.pointerId,from:index,row,moved:false};row.style.borderColor='#1d5f8d';row.style.background='#eaf3fa';row.style.boxShadow='0 3px 12px #0f3b5a22';row.style.zIndex='2';row.style.position='relative';
+ try{row.querySelector('span').setPointerCapture(ev.pointerId);}catch(e){}
+ const move=e=>{if(!lbdPointerDrag||e.pointerId!==lbdPointerDrag.pointerId)return;lbdPointerDrag.moved=true;const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.lbd-order-row');if(target&&target.parentElement===document.getElementById('lbdOrderList')){const to=Number(target.dataset.index);if(Number.isInteger(to)&&to!==lbdPointerDrag.from){reorderLBDOrder(lbdPointerDrag.from,to);lbdPointerDrag.from=to;}}};
+ const finish=e=>{if(!lbdPointerDrag||e.pointerId!==lbdPointerDrag.pointerId)return;document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',finish);document.removeEventListener('pointercancel',finish);lbdPointerDrag=null;renderLBDOrder();};
+ document.addEventListener('pointermove',move);document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
+}
+function reorderLBDOrder(from,to){if(lbdCursor>0||from<0||to<0||from>=lbdOrder.length||to>=lbdOrder.length)return;const item=lbdOrder.splice(from,1)[0];lbdOrder.splice(to,0,item);renderLBDOrder();document.getElementById('lbdOrderStatus').textContent='Order adjusted. Press Apply Measurement Order to confirm.';}
+
+function moveLBDOrder(index,delta){if(lbdCursor>0){document.getElementById('lbdOrderStatus').textContent='Order is locked after recording begins. Reset the survey to change the sequence.';return;}const next=index+delta;if(next<0||next>=lbdOrder.length)return;[lbdOrder[index],lbdOrder[next]]=[lbdOrder[next],lbdOrder[index]];renderLBDOrder();}
+function applyLBDOrder(){if(lbdCursor>0){document.getElementById('lbdOrderStatus').textContent='Order is locked after recording begins. Reset the survey to change the sequence.';return;}lbdOrderApplied=[...lbdOrder];saveLBDData(true);document.getElementById('lbdOrderStatus').textContent='Applied! Measurements will be requested in this order at every chainage.';syncLBDEntry();}
+function syncLBDEntry(){const sel=document.getElementById('lbdMeasureType');if(!sel)return;const input=document.getElementById('lbdMeasureValue'),btn=document.getElementById('lbdRecordBtn'),hint=document.getElementById('lbdNextHint');const order=validLBDOrder(lbdOrderApplied);const total=lbdRowsData.length*order.length;const complete=total>0&&lbdCursor>=total;sel.disabled=complete;input.disabled=complete;if(btn)btn.disabled=complete;if(!total){hint.textContent='Enter Road Length (km) and Survey Interval. Press Generate / Update Chainage Rows, or Record Measurement will generate the rows automatically.';return;}if(complete){hint.textContent='All measurements have been recorded. Input is disabled. Use Reset LBD Survey to start again.';input.value='';return;}const rowIndex=Math.floor(lbdCursor/order.length),fieldIndex=lbdCursor%order.length;sel.value=order[fieldIndex];input.value='';hint.textContent='Next: Chainage '+fmtLBDChainage(lbdRowsData[rowIndex].chainage)+' • '+LBD_FIELDS.find(f=>f[0]===order[fieldIndex])[1];}
+function recordLBDMeasurement(){const order=validLBDOrder(lbdOrderApplied);if(lbdRowsData.length&&lbdCursor>=lbdRowsData.length*order.length){syncLBDEntry();document.getElementById('lbdStatus').textContent='All measurements are complete. Reset the survey to record a new set.';return;}if(!lbdRowsData.length){const chainages=lbdChainages();if(!chainages.length){document.getElementById('lbdStatus').textContent='Enter a valid Road Length (km) and select a Survey Interval first.';document.getElementById('lbdRoadLength')?.focus();return;}lbdRowsData=chainages.map(m=>({chainage:m,topWidth:'',leftProjection:'',rightProjection:'',leftDepth:'',rightDepth:''}));lbdCursor=0;renderLBDRows();saveLBDData(true);document.getElementById('lbdStatus').textContent='Chainage rows generated automatically. Recording first measurement…';}const input=document.getElementById('lbdMeasureValue'),val=input.value;if(val===''||!Number.isFinite(Number(val))||Number(val)<0){document.getElementById('lbdStatus').textContent='Enter a valid non-negative measurement.';return;}const rowIndex=Math.floor(lbdCursor/order.length),field=order[lbdCursor%order.length],row=lbdRowsData[rowIndex];row[field]=String(val);const label=LBD_FIELDS.find(f=>f[0]===field)[1];document.getElementById('lbdRecordedIn').textContent='RECORDED IN: Chainage '+fmtLBDChainage(row.chainage)+' | '+label+' = '+Number(val).toFixed(3)+' m';lbdCursor++;renderLBDRows();saveLBDData(true);document.getElementById('lbdStatus').textContent='Recorded '+label+' at chainage '+fmtLBDChainage(row.chainage)+'.';syncLBDEntry();if(lbdCursor<lbdRowsData.length*order.length){setTimeout(()=>{const next=document.getElementById('lbdMeasureValue');if(next&&!next.disabled){next.focus({preventScroll:true});}},50);}}
+function renderLBDRows(){const host=document.getElementById('lbdRows');if(!host)return;if(!lbdRowsData.length){host.innerHTML='<p class="small-note">Enter road length and generate chainage rows.</p>';return;}host.innerHTML='<table style="min-width:760px"><thead><tr><th>No.</th><th>Chainage</th>'+LBD_FIELDS.map(c=>'<th>'+c[1]+'</th>').join('')+'</tr></thead><tbody>'+lbdRowsData.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+fmtLBDChainage(r.chainage)+'</td>'+LBD_FIELDS.map(c=>'<td>'+(r[c[0]]!==''&&r[c[0]]!=null?String(r[c[0]]):'—')+'</td>').join('')+'</tr>').join('')+'</tbody></table>';}
+function exportLBDCSV(){if(!lbdRowsData.length){document.getElementById('lbdStatus').textContent='Generate chainage rows before exporting.';return;}const headers=['Road Name','Road Length (km)','Survey Interval (m)','No.','Chainage (m)','Top Width (m)','Left Sloping Horizontal Projection (m)','Right Sloping Horizontal Projection (m)','Left Depth (m)','Right Depth (m)'];const rows=lbdRowsData.map((r,i)=>[document.getElementById('lbdRoadName').value,document.getElementById('lbdRoadLength').value,document.getElementById('lbdInterval').value,i+1,fmtLBDChainage(r.chainage),r.topWidth,r.leftProjection,r.rightProjection,r.leftDepth,r.rightDepth]);const csv='\uFEFF'+[headers,...rows].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download=((document.getElementById('lbdRoadName').value||'LBD_Survey').replace(/[^a-z0-9_-]+/gi,'_'))+'_LBD.csv';a.click();URL.revokeObjectURL(url);}
+function resetLBDData(){if(!confirm('Clear all LBD survey data on this device?'))return;localStorage.removeItem(LBD_KEY);lbdRowsData=[];lbdCursor=0;lbdOrder=['topWidth','leftProjection','rightProjection','leftDepth','rightDepth'];lbdOrderApplied=[...lbdOrder];renderLBDOrder();['lbdRoadName','lbdRoadLength'].forEach(id=>document.getElementById(id).value='');document.getElementById('lbdInterval').value='25';document.getElementById('lbdRecordedIn').textContent='RECORDED IN: Not recorded yet';renderLBDRows();syncLBDEntry();document.getElementById('lbdStatus').textContent='LBD survey cleared.';}
+['lbdRoadName','lbdRoadLength','lbdInterval'].forEach(id=>{document.addEventListener('input',e=>{if(e.target&&e.target.id===id)saveLBDData(true);});document.addEventListener('change',e=>{if(e.target&&e.target.id===id)saveLBDData(true);});});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  updateTotalSurveyPoints(); restoreSurveyState(); updateOtherStageField(); renderLBDOrder();
+  if(readings.length===0){setDefaultSide(document.getElementById('defaultSide')?.value || 'Left');selectPosition('Centre');}
+  persistSurveyState();
+  renderSavedSurveyProjects();
+});
+['roadName','levelStage','otherStageName','roadLength','surveyInterval','benchmarkType','benchmarkRL','sidePointCount','defaultSide','chainage','staffReading','readingRemark'].forEach(id=>{
+  const el=document.getElementById(id); if(!el)return;
+  el.addEventListener('input',persistSurveyState);
+  el.addEventListener('change',()=>{if(id==='levelStage')updateOtherStageField();updateRecordingPreview();updateEndSurveyButton();persistSurveyState();});
+});
+document.getElementById('chainage')?.addEventListener('change',()=>{updateRecordingPreview();updateEndSurveyButton();persistSurveyState();});
+updateRecordingPreview(); updateEndSurveyButton();
+</script>
+<script>
+// Register the service worker for GitHub Pages PWA support.
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function (err) {
+      console.error('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
